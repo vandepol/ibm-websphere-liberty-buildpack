@@ -40,7 +40,8 @@ All Documentation is available in the Docs folder of the buildpack.
     * [DistZip](docs/container-distZip.md)
 * Frameworks
     * [AppDynamics Agent](docs/framework-app_dynamics_agent.md)
-    * [DynaTrace Agent](docs/framework-dynatrace-agent.md)
+    * [DynaTrace Application Monitoring Agent](docs/framework-dynatrace-agent.md)
+    * [Dynatrace Ruxit Cloud Native Agent](docs/framework-ruxit_agent.md)
     * [DynamicPULSE Agent](docs/framework-dynamic_pulse_agent.md)
     * [Java Options](docs/framework-java_opts.md)
     * [JRebel Agent](docs/framework-jrebel-agent.md)
@@ -66,7 +67,7 @@ All Documentation is available in the Docs folder of the buildpack.
 	* [Utility: Repositories](docs/util-repositories.md)
 	* [Utility: Repository Builder](docs/util-repository-builder.md)
 	* [Utility: Test Applications](docs/util-test-applications.md)
-	    
+
 ## Running Tests
 To run the tests, do the following:
 
@@ -97,6 +98,6 @@ bundle install --gemfile Gemfile.rubymine-debug
 [tuning options]: docs/tuning.md
 [java main push]: docs/java-main.md
 
-[Liberty-License]: http://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/8.5.5.9/lafiles/runtime/en.html
-[JVM-License]: http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=&li_formnum=L-JWOD-9SYNCP&title=IBM%C2%AE+SDK%2C+Java+Technology+Edition%2C+Version+8.0&l=en
+[Liberty-License]: https://public.dhe.ibm.com/ibmdl/export/pub/software/websphere/wasdev/downloads/wlp/16.0.0.2/lafiles/runtime/en.html
+[JVM-License]: http://www14.software.ibm.com/cgi-bin/weblap/lap.pl?la_formnum=&li_formnum=L-PMAA-A3Z8P2&title=IBM%AE+SDK%2C+Java%99+Technology+Edition%2C+Version+8.0&l=en
 [manifest documentation]: http://docs.cloudfoundry.org/devguide/deploy-apps/manifest.html

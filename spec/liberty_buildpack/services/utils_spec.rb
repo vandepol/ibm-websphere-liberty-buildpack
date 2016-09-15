@@ -164,18 +164,18 @@ module LibertyBuildpack::Services
       # This is currently tested in log_analysis_spec.rb
     end # describe test update bootstrap.properties
 
-    describe 'test is_logical_singleton?' do
+    describe 'test logical_singleton?' do
       it 'should handle single element with no config ids' do
         doc = REXML::Document.new('<server></server>')
         e1 = REXML::Element.new('stanza', doc.root)
-        expect(Utils.is_logical_singleton?([e1])).to eq(true)
+        expect(Utils.logical_singleton?([e1])).to eq(true)
       end # it
 
       it 'should handle partitioned element with no config ids' do
         doc = REXML::Document.new('<server></server>')
         e1 = REXML::Element.new('stanza', doc.root)
         e2 = REXML::Element.new('stanza', doc.root)
-        expect(Utils.is_logical_singleton?([e1, e2])).to eq(true)
+        expect(Utils.logical_singleton?([e1, e2])).to eq(true)
       end # it
 
       it 'should handle partitioned element with config ids' do
@@ -184,7 +184,7 @@ module LibertyBuildpack::Services
         e1.add_attribute('id', 'someid')
         e2 = REXML::Element.new('stanza', doc.root)
         e2.add_attribute('id', 'someid')
-        expect(Utils.is_logical_singleton?([e1, e2])).to eq(true)
+        expect(Utils.logical_singleton?([e1, e2])).to eq(true)
       end # it
 
       it 'should handle partitioned element with mismatched config ids' do
@@ -193,7 +193,7 @@ module LibertyBuildpack::Services
         e1.add_attribute('id', 'someid')
         e2 = REXML::Element.new('stanza', doc.root)
         e2.add_attribute('id', 'otherid')
-        expect(Utils.is_logical_singleton?([e1, e2])).to eq(false)
+        expect(Utils.logical_singleton?([e1, e2])).to eq(false)
       end # it
 
       it 'should handle partitioned element where first has id and second does not' do
@@ -201,7 +201,7 @@ module LibertyBuildpack::Services
         e1 = REXML::Element.new('stanza', doc.root)
         e1.add_attribute('id', 'someid')
         e2 = REXML::Element.new('stanza', doc.root)
-        expect(Utils.is_logical_singleton?([e1, e2])).to eq(false)
+        expect(Utils.logical_singleton?([e1, e2])).to eq(false)
       end # it
 
       it 'should handle partitioned element where second has id and first does not' do
@@ -209,9 +209,9 @@ module LibertyBuildpack::Services
         e1 = REXML::Element.new('stanza', doc.root)
         e2 = REXML::Element.new('stanza', doc.root)
         e2.add_attribute('id', 'someid')
-        expect(Utils.is_logical_singleton?([e1, e2])).to eq(false)
+        expect(Utils.logical_singleton?([e1, e2])).to eq(false)
       end # it
-    end # describe test is_logical_singleton?
+    end # describe test logical_singleton?
 
     describe 'test find_and_update_attribute' do
       it 'should create attribute when it does not exist in single element' do
@@ -573,6 +573,16 @@ module LibertyBuildpack::Services
         expect(result).to include(config['client_jar_url'])
       end
 
+      it 'via client_jar_url with variable' do
+        config = {}
+        config['client_jar_url'] = '{default_repository_root}/myPath'
+        urls = {}
+
+        result = Utils.get_urls_for_client_jars(config, urls)
+        expected = 'https://download.run.pivotal.io/myPath'
+        expect(result).to include(expected)
+      end
+
       it 'via driver' do
         data = [LibertyBuildpack::Util::TokenizedVersion.new('1.5.0'), 'http://myHost/myPath']
         LibertyBuildpack::Repository::ConfiguredItem.stub(:find_item).and_return(data)
@@ -595,15 +605,13 @@ module LibertyBuildpack::Services
       let(:vcap_services) do
         { 'myName' =>
           [{ 'name' => 'myName',
-              'plan' => 'beta',
-              'label' => 'myLabel',
-              'credentials' => {
-                'url' => 'http://foobar',
-                'password' => 'myPassword',
-                'scopes' => %w(singleton request)
-              }
-            }]
-        }
+             'plan' => 'beta',
+             'label' => 'myLabel',
+             'credentials' => {
+               'url' => 'http://foobar',
+               'password' => 'myPassword',
+               'scopes' => %w(singleton request)
+             } }] }
       end
 
       def test_result(generated_hash, generated_xml, name, value)
@@ -628,11 +636,11 @@ module LibertyBuildpack::Services
 
       it 'parse custom' do
         doc = REXML::Document.new('<server></server>')
-        hash = Utils.parse_compliant_vcap_service(doc.root, vcap_services['myName'][0]) do | name, value |
+        hash = Utils.parse_compliant_vcap_service(doc.root, vcap_services['myName'][0]) do |name, value|
           if name == 'credentials.scopes'
-            value = value.join(' ')
+            value.join(' ')
           elsif name == 'plan'
-            value = 'alpha'
+            'alpha'
           else
             value
           end

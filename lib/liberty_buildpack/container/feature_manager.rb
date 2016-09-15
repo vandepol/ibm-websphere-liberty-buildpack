@@ -88,6 +88,27 @@ module LibertyBuildpack::Container
         @logger.debug('exit')
       end
 
+      # collect list of feature names from the server.xml and configDropins/
+      # directories.
+      #
+      # @return a String array of feature names.
+      def get_features(server_xml)
+        features = Set.new(read_features(server_xml))
+
+        # Check for any configuration files under configDrops/overrides and
+        # configDropins/defaults. Since featureManager's feature elements
+        # have multiple cardinality, the values will always be merged together.
+        # Reading or processing order does not matter.
+        server_dir = File.dirname(server_xml)
+        %w(defaults overrides).each do |type|
+          Dir.glob("#{server_dir}/configDropins/#{type}/*.xml").each do |file|
+            features.merge(read_features(file))
+          end
+        end
+
+        features.to_a
+      end
+
     private
 
       FEATURES_ALREADY_PRESENT_EXIT_CODE = 22
@@ -156,27 +177,6 @@ module LibertyBuildpack::Container
         use_liberty_repository_with_properties_file
       end
 
-      # collect list of feature names from the server.xml and configDropins/
-      # directories.
-      #
-      # @return a String array of feature names.
-      def get_features(server_xml)
-        features = Set.new(read_features(server_xml))
-
-        # Check for any configuration files under configDrops/overrides and
-        # configDropins/defaults. Since featureManager's feature elements
-        # have multiple cardinality, the values will always be merged together.
-        # Reading or processing order does not matter.
-        server_dir = File.dirname(server_xml)
-        %w{defaults overrides}.each do | type |
-          Dir.glob("#{server_dir}/configDropins/#{type}/*.xml").each do |file|
-            features.merge(read_features(file))
-          end
-        end
-
-        features.to_a
-      end
-
       # parse the given server.xml to find all features required. User features
       # are excluded by looking for features that do not contain a colon
       # (user features specify a "product extension" location before the colon
@@ -188,7 +188,7 @@ module LibertyBuildpack::Container
         @logger.debug('entry (#{server_xml})')
         server_xml_doc = LibertyBuildpack::Util::XmlUtils.read_xml_file(server_xml)
         features = REXML::XPath.match(server_xml_doc, '/server/featureManager/feature/text()[not(contains(., ":"))]')
-        features = features.map { | feature | feature.to_s }
+        features = features.map(&:to_s)
         @logger.debug("exit (#{features})")
         features
       end
