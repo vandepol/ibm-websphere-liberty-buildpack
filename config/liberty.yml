@@ -15,8 +15,8 @@
 
 # Configuration for the Liberty container
 ---
-repository_root: "https://ibm.box.com/v/wlpANDwxs"
-version: 8.5.+
+repository_root: "https://ibm.box.com/v/wlpANDwxs/"
+version: 16.0.0.2
 type: webProfile7
 minify: false
 app_state: true
@@ -56,4 +56,3 @@ component_feature_map:
  - wasJmsServer-1.0
  - wmqJmsClient-1.1
  - wsSecurity-1.1
- - eXtremeScale.client-1.1
